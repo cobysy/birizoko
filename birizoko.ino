@@ -1,8 +1,8 @@
 #include <avr/wdt.h>
 #include <Adafruit_CC3000.h>
 #include <SPI.h>
-#include <OneWire.h>
-//#include <DallasTemperature.h>
+#include "OneWire.h"
+#include "DallasTemperature.h"
 #include <SoftwareSerial.h>
 
 #define rxPin 255         // Not used, so set to invalid pin #
@@ -67,13 +67,12 @@ SoftwareSerial mySerial =  SoftwareSerial(rxPin, txPin, SPOL);
 OneWire ds(ONE_WIRE_BUS);
 
 // Pass our oneWire reference to Dallas Temperature.
-//DallasTemperature sensors(&oneWire);
-//
-//// arrays to hold device addresses
-//DeviceAddress insideThermometer, outsideThermometer;
+DallasTemperature sensors(&ds);
+// arrays to hold device addresses
+DeviceAddress insideThermometer, outsideThermometer;
 
-#define MAX_DS1820_SENSORS 2
-byte addr[MAX_DS1820_SENSORS][8];
+//#define MAX_DS1820_SENSORS 2
+//byte addr[MAX_DS1820_SENSORS][8];
 
 // These are the interrupt and control pins
 #define ADAFRUIT_CC3000_IRQ   3  // MUST be an interrupt pin!
@@ -162,21 +161,21 @@ void setup()
 
   // Start up the library
 
-//  sensors.begin();
-//  if (!sensors.getAddress(insideThermometer, 0)) Serial.println(("No temp probe 0"));
-//  if (!sensors.getAddress(outsideThermometer, 1)) Serial.println(("No temp probe 1"));
+  sensors.begin();
+  //if (!sensors.getAddress(insideThermometer, 0)) Serial.println(("No temp probe 0"));
+  //if (!sensors.getAddress(outsideThermometer, 1)) Serial.println(("No temp probe 1"));
 //  sensors.setResolution(insideThermometer, TEMPERATURE_PRECISION);
 //  sensors.setResolution(outsideThermometer, TEMPERATURE_PRECISION);
 
-  for (int i = 0; i < MAX_DS1820_SENSORS; i++)
-  {
-    if (!ds.search(addr[i])) 
-    {
-      Serial.print("No temp probe "); Serial.print(i);
-      ds.reset_search();
-      return;
-    }
-  }
+//  for (int i = 0; i < MAX_DS1820_SENSORS; i++)
+//  {
+//    if (!ds.search(addr[i])) 
+//    {
+//      Serial.print("No temp probe "); Serial.print(i);
+//      ds.reset_search();
+//      return;
+//    }
+//  }
   
 
   /* Initialise the module */
@@ -226,26 +225,69 @@ void setup()
 
 void loop(void)
 {
-//  sensors.requestTemperatures();
+  sensors.requestTemperatures();
 //  printTemperature(insideThermometer);
 //  printTemperature(outsideThermometer);
 
-  byte i;
-  byte present = 0;
-  byte type_s;
-  byte data[12];
-  byte addr[8];
-  float celsius, fahrenheit;
+//  byte i;
+//  byte present = 0;
+//  byte type_s;
+//  byte data[12];
+//  byte addr[8];
+//  float celsius, fahrenheit;
+//
+//  if (!ds.search(addr))
+//  {
+//    // No more addresses
+//    ds.reset_search();
+//    control();
+//    delay(1000);
+//    return;
+//  }
+//
+//  if (OneWire::crc8(addr, 7) != addr[7]) {
+//      Serial.println("CRC is not valid!");
+//      return;
+//  }
+//  ds.reset();
+//  ds.select(addr);
+//  ds.write(0x44);
+//  delay(1000); 
+//  
+//  present = ds.reset();
+//  ds.select(addr);    
+//  ds.write(0xBE);         // Read Scratchpad
+//  for ( i = 0; i < 9; i++) {           // we need 9 bytes
+//    data[i] = ds.read();
+//    Serial.print(data[i], HEX);
+//    Serial.print(" ");
+//  }
+//    // Convert the data to actual temperature
+//  // because the result is a 16 bit signed integer, it should
+//  // be stored to an "int16_t" type, which is always 16 bits
+//  // even when compiled on a 32 bit processor.
+//  int16_t raw = (data[1] << 8) | data[0];
+//  if (type_s) {
+//    raw = raw << 3; // 9 bit resolution default
+//    if (data[7] == 0x10) {
+//      // "count remain" gives full 12 bit resolution
+//      raw = (raw & 0xFFF0) + 12 - data[6];
+//    }
+//  } else {
+//    byte cfg = (data[4] & 0x60);
+//    // at lower res, the low bits are undefined, so let's zero them
+//    if (cfg == 0x00) raw = raw & ~7;  // 9 bit resolution, 93.75 ms
+//    else if (cfg == 0x20) raw = raw & ~3; // 10 bit res, 187.5 ms
+//    else if (cfg == 0x40) raw = raw & ~1; // 11 bit res, 375 ms
+//    //// default is 12 bit resolution, 750 ms conversion time
+//  }
+//  celsius = (float)raw / 16.0;
+//  
+//   if (celsius > 0 && celsius < 120)
+//    { //faulty wiring causes weird temperatures..
+//      currentTemp = celsius;
+//    }
 
-  if (!ds.search(addr))
-  {
-    // No more addresses
-    ds.reset_search();
-    control();
-    delay(1000);
-    return;
-  }
- 
   getTemp();
   lcdPrint();
 
@@ -316,21 +358,12 @@ void control()
 void getTemp()
 {
   
-  //sensors.requestTemperatures();
-  //double t = sensors.getTempC(insideThermometer);
-  for (sensor=0;sensor<MAX_DS1820_SENSORS;sensor++)
-  {
-    if ( OneWire::crc8( addr[sensor], 7) != addr[sensor][7]) 
-    {
-      Serial.print("No valid probe "); Serial.print(i);
-      return;
-    }
-    
+  sensors.requestTemperatures();
+  double t = sensors.getTempC(insideThermometer);
     if (t > 0 && t < 120)
     { //faulty wiring causes weird temperatures..
       currentTemp = t;
     }
-  }
 }
 
 void lcdPrint()
