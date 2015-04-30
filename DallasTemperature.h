@@ -77,13 +77,11 @@ public:
   // // Is a conversion complete on the wire?
   // bool isConversionComplete(void);
 
-private:  
-
   // returns true if address is valid
   bool validAddress(uint8_t*);
 
   // finds an address at a given index on the bus 
-  // bool getAddress(uint8_t*, const uint8_t);
+  bool getAddress(uint8_t*, const uint8_t);
 
   // attempt to determine if the device at the given address is connected to the bus
   bool isConnected(uint8_t*);
@@ -121,7 +119,6 @@ private:
   // void setCheckForConversion(bool);
   // bool getCheckForConversion(void);
 
-public:
   // sends command for all devices on the bus to perform a temperature conversion 
   void requestTemperatures(void);
    

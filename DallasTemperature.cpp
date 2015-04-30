@@ -73,7 +73,6 @@ bool DallasTemperature::validAddress(uint8_t* deviceAddress)
   return (_wire->crc8(deviceAddress, 7) == deviceAddress[7]);
 }
 
-/***
 // finds an address at a given index on the bus
 // returns true if the device was found
 bool DallasTemperature::getAddress(uint8_t* deviceAddress, uint8_t index)
@@ -90,7 +89,6 @@ bool DallasTemperature::getAddress(uint8_t* deviceAddress, uint8_t index)
 
   return false;
 }
-***/
 
 // attempt to determine if the device at the given address is connected to the bus
 bool DallasTemperature::isConnected(uint8_t* deviceAddress)

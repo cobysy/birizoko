@@ -162,8 +162,8 @@ void setup()
   // Start up the library
 
   sensors.begin();
-  //if (!sensors.getAddress(insideThermometer, 0)) Serial.println(("No temp probe 0"));
-  //if (!sensors.getAddress(outsideThermometer, 1)) Serial.println(("No temp probe 1"));
+  if (!sensors.getAddress(insideThermometer, 0)) Serial.println(("No temp probe 0"));
+  if (!sensors.getAddress(outsideThermometer, 1)) Serial.println(("No temp probe 1"));
 //  sensors.setResolution(insideThermometer, TEMPERATURE_PRECISION);
 //  sensors.setResolution(outsideThermometer, TEMPERATURE_PRECISION);
 
@@ -185,16 +185,6 @@ void setup()
     Serial.print("CC3000 failed!");
     while (1);
   }
-
-
-  //  uint32_t ipAddress = cc3000.IP2U32(192, 168, 1, 19);
-  //  uint32_t netMask = cc3000.IP2U32(255, 255, 255, 0);
-  //  uint32_t defaultGateway = cc3000.IP2U32(192, 168, 1, 1);
-  //  uint32_t dns = cc3000.IP2U32(8, 8, 4, 4);
-  //  if (!cc3000.setStaticIPAddress(ipAddress, netMask, defaultGateway, dns)) {
-  //    Serial.print("Failed to set static IP!");
-  //    while (1);
-  //  }
 
   Serial.print(("Connecting to wifi ..."));
   if (!cc3000.connectToAP(WLAN_SSID, WLAN_PASS, WLAN_SECURITY)) {
@@ -225,68 +215,9 @@ void setup()
 
 void loop(void)
 {
-  sensors.requestTemperatures();
+//  sensors.requestTemperatures();
 //  printTemperature(insideThermometer);
 //  printTemperature(outsideThermometer);
-
-//  byte i;
-//  byte present = 0;
-//  byte type_s;
-//  byte data[12];
-//  byte addr[8];
-//  float celsius, fahrenheit;
-//
-//  if (!ds.search(addr))
-//  {
-//    // No more addresses
-//    ds.reset_search();
-//    control();
-//    delay(1000);
-//    return;
-//  }
-//
-//  if (OneWire::crc8(addr, 7) != addr[7]) {
-//      Serial.println("CRC is not valid!");
-//      return;
-//  }
-//  ds.reset();
-//  ds.select(addr);
-//  ds.write(0x44);
-//  delay(1000); 
-//  
-//  present = ds.reset();
-//  ds.select(addr);    
-//  ds.write(0xBE);         // Read Scratchpad
-//  for ( i = 0; i < 9; i++) {           // we need 9 bytes
-//    data[i] = ds.read();
-//    Serial.print(data[i], HEX);
-//    Serial.print(" ");
-//  }
-//    // Convert the data to actual temperature
-//  // because the result is a 16 bit signed integer, it should
-//  // be stored to an "int16_t" type, which is always 16 bits
-//  // even when compiled on a 32 bit processor.
-//  int16_t raw = (data[1] << 8) | data[0];
-//  if (type_s) {
-//    raw = raw << 3; // 9 bit resolution default
-//    if (data[7] == 0x10) {
-//      // "count remain" gives full 12 bit resolution
-//      raw = (raw & 0xFFF0) + 12 - data[6];
-//    }
-//  } else {
-//    byte cfg = (data[4] & 0x60);
-//    // at lower res, the low bits are undefined, so let's zero them
-//    if (cfg == 0x00) raw = raw & ~7;  // 9 bit resolution, 93.75 ms
-//    else if (cfg == 0x20) raw = raw & ~3; // 10 bit res, 187.5 ms
-//    else if (cfg == 0x40) raw = raw & ~1; // 11 bit res, 375 ms
-//    //// default is 12 bit resolution, 750 ms conversion time
-//  }
-//  celsius = (float)raw / 16.0;
-//  
-//   if (celsius > 0 && celsius < 120)
-//    { //faulty wiring causes weird temperatures..
-//      currentTemp = celsius;
-//    }
 
   getTemp();
   lcdPrint();
