@@ -46,14 +46,12 @@ void DallasTemperature::begin(void)
     {
       /***
       if (!parasite && readPowerSupply(deviceAddress)) parasite = true;
-      ***/
 
       ScratchPad scratchPad;
 
       readScratchPad(deviceAddress, scratchPad);
 
-      /***
-	    bitResolution = max(bitResolution, getResolution(deviceAddress));
+      bitResolution = max(bitResolution, getResolution(deviceAddress));
       ***/
 
       devices++;
@@ -90,12 +88,14 @@ bool DallasTemperature::getAddress(uint8_t* deviceAddress, uint8_t index)
   return false;
 }
 
+/***
 // attempt to determine if the device at the given address is connected to the bus
 bool DallasTemperature::isConnected(uint8_t* deviceAddress)
 {
   ScratchPad scratchPad;
   return isConnected(deviceAddress, scratchPad);
 }
+***/
 
 // attempt to determine if the device at the given address is connected to the bus
 // also allows for updating the read scratchpad
@@ -141,6 +141,13 @@ void DallasTemperature::readScratchPad(uint8_t* deviceAddress, uint8_t* scratchP
   // byte 1: temperature MSB
   scratchPad[TEMP_MSB] = _wire->read();
 
+  for (int i = 2; i <= 8; i++)
+  {
+    // SCTRACHPAD_CRC
+    scratchPad[SCRATCHPAD_CRC] = _wire->read();
+  }
+  
+  /***
   // byte 2: high alarm temp
   scratchPad[HIGH_ALARM_TEMP] = _wire->read();
 
@@ -170,12 +177,16 @@ void DallasTemperature::readScratchPad(uint8_t* deviceAddress, uint8_t* scratchP
   // SCTRACHPAD_CRC
   scratchPad[SCRATCHPAD_CRC] = _wire->read();
 
-  for (uint8_t i=0; i<8; i++) {
+  //for (uint8_t i=0; i<8; i++) {
     //Serial.print("\n 0x"); Serial.print(scratchPad[i], HEX);
-  }
+  //}
+  
+  ***/
+  
   _wire->reset();
 }
 
+/***
 // writes device's scratch pad
 void DallasTemperature::writeScratchPad(uint8_t* deviceAddress, const uint8_t* scratchPad)
 {
@@ -185,15 +196,14 @@ void DallasTemperature::writeScratchPad(uint8_t* deviceAddress, const uint8_t* s
   _wire->write(scratchPad[HIGH_ALARM_TEMP]); // high alarm temp
   _wire->write(scratchPad[LOW_ALARM_TEMP]); // low alarm temp
   // DS18S20 does not use the configuration register
-  /*** if (deviceAddress[0] != DS18S20MODEL) ***/ _wire->write(scratchPad[CONFIGURATION]); // configuration
+  f (deviceAddress[0] != DS18S20MODEL) _wire->write(scratchPad[CONFIGURATION]); // configuration
   _wire->reset();
   // save the newly written values to eeprom
-  _wire->write(COPYSCRATCH, false /*** parasite ***/);
-  /*** if (parasite) delay(10); // 10ms delay ***/
+  _wire->write(COPYSCRATCH, parasite);
+  if (parasite) delay(10); // 10ms delay
   _wire->reset();
 }
 
-/***
 // reads the device's power requirements
 bool DallasTemperature::readPowerSupply(uint8_t* deviceAddress)
 {
@@ -243,7 +253,7 @@ bool DallasTemperature::setResolution(uint8_t* deviceAddress, uint8_t newResolut
         case 9:
         default:
           scratchPad[CONFIGURATION] = TEMP_9_BIT;
-          /*** break;
+          break;
       }
       writeScratchPad(deviceAddress, scratchPad);
     }

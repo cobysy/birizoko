@@ -41,12 +41,14 @@
 // Scratchpad locations
 #define TEMP_LSB        0
 #define TEMP_MSB        1
+/***
 #define HIGH_ALARM_TEMP 2
 #define LOW_ALARM_TEMP  3
 #define CONFIGURATION   4
 #define INTERNAL_BYTE   5
 #define COUNT_REMAIN    6
 #define COUNT_PER_C     7
+***/
 #define SCRATCHPAD_CRC  8
 
 // Device resolution
