@@ -127,12 +127,12 @@ void DallasTemperature::readScratchPad(uint8_t* deviceAddress, uint8_t* scratchP
   //         DS18B20 & DS1822: store for crc
   // byte 8: SCRATCHPAD_CRC
   //
-  // for(int i=0; i<9; i++)
-  // {
-  //   scratchPad[i] = _wire->read();
-  // }
-
+  for(int i=0; i<9; i++)
+  {
+     scratchPad[i] = _wire->read();
+  }
   
+  /***
   // read the response
 
   // byte 0: temperature LSB
@@ -141,13 +141,6 @@ void DallasTemperature::readScratchPad(uint8_t* deviceAddress, uint8_t* scratchP
   // byte 1: temperature MSB
   scratchPad[TEMP_MSB] = _wire->read();
 
-  for (int i = 2; i <= 8; i++)
-  {
-    // SCTRACHPAD_CRC
-    scratchPad[SCRATCHPAD_CRC] = _wire->read();
-  }
-  
-  /***
   // byte 2: high alarm temp
   scratchPad[HIGH_ALARM_TEMP] = _wire->read();
 
